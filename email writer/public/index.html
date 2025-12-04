@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email Writer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">@</div>
+        <div class="titles">
+          <h1>Email Writer</h1>
+          <p class="tagline">Generate context-aware, polished thread replies</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="generateBtn" class="primary" aria-label="Generate reply">Generate Reply</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel inputs" aria-labelledby="inputsTitle">
+        <h2 id="inputsTitle">Input</h2>
+        <div class="field">
+          <label for="systemPrompt">System Prompt</label>
+          <textarea id="systemPrompt" rows="4" placeholder="You are a helpful email writing assistant. Write a professional, concise email reply."></textarea>
+        </div>
+        <div class="field">
+          <label for="instructions">Instructions</label>
+          <div class="input-with-tools">
+            <textarea id="instructions" rows="6" placeholder="E.g., Reply politely, ask for deadline, propose a call..."></textarea>
+            <div class="voice-tools">
+              <button id="recordBtn" class="ghost small" aria-label="Record voice">🎙️ Record</button>
+              <span id="recordStatus" class="record-status" aria-live="polite"></span>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="emailThread">Email Thread</label>
+          <textarea id="emailThread" rows="14" placeholder="Paste the full email thread here..."></textarea>
+        </div>
+        <div class="hint">Tip: Keep instructions high-level; the model reads the full thread.</div>
+      </section>
+
+      <section class="panel output" aria-labelledby="outputTitle">
+        <div class="panel-header">
+          <h2 id="outputTitle">Response</h2>
+          <div class="panel-tools">
+            <button id="copyBtn" class="ghost" aria-label="Copy response" disabled>Copy</button>
+          </div>
+        </div>
+        <div id="result" class="result" aria-live="polite"></div>
+      </section>
+
+      <section class="panel prompt" aria-labelledby="promptTitle">
+        <div class="panel-header">
+          <h2 id="promptTitle">Prompt Preview</h2>
+        </div>
+        <div id="promptBox" class="result" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Powered by Azure OpenAI</span>
+      <span class="sep">•</span>
+      <button id="themeToggle" class="ghost small" aria-label="Toggle theme">Toggle Theme</button>
+    </footer>
+  </div>
+
+  <div id="loader" class="loader hidden" aria-hidden="true">
+    <div class="spinner"></div>
+    <div class="loader-text">Generating reply…</div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Writer - AI 邮件回复生成器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Email Writer</h1>
+            <p>AI 驱动的邮件回复生成器</p>
+            <button id="themeToggle" class="theme-toggle">🌙 深色模式</button>
+        </header>
+
+        <div class="main-content">
+            <div class="panels-container">
+                <!-- 左侧输入面板 -->
+                <div class="left-panel">
+                    <div class="panel">
+                        <h3>系统提示词</h3>
+                        <textarea id="systemPrompt" class="input-textarea" placeholder="设置 AI 的行为和风格...">You are a professional email writer. Generate clear, concise, and polite email responses.</textarea>
+                    </div>
+
+                    <div class="panel">
+                        <h3>指示（Instructions）</h3>
+                        <div class="input-wrapper">
+                            <textarea id="instructions" class="input-textarea" placeholder="例如：写得更正式、简洁、友好等..."></textarea>
+                            <button id="recordBtn" class="record-btn" title="按住语音输入">🎙️</button>
+                        </div>
+                        <div id="recordingStatus" class="recorder-status"></div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>邮件内容</h3>
+                        <textarea id="emailThread" class="input-textarea" placeholder="粘贴完整的邮件对话..."></textarea>
+                    </div>
+                </div>
+
+                <!-- 中间操作区 -->
+                <div class="middle-panel">
+                    <button id="generateBtn" class="generate-btn">生成回复</button>
+                    <div id="loadingIndicator" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>正在处理...</p>
+                    </div>
+                </div>
+
+                <!-- 右侧输出面板 -->
+                <div class="right-panel">
+                    <div class="panel">
+                        <h3>生成的回复</h3>
+                        <div id="result" class="output-area">
+                            <p class="placeholder">生成的邮件回复会显示在这里...</p>
+                        </div>
+                        <button id="copyBtn" class="copy-btn hidden">📋 复制</button>
+                    </div>
+
+                    <div class="panel">
+                        <h3>提示词预览</h3>
+                        <pre id="promptPreview" class="prompt-preview">
+                            <p class="placeholder">提示词会显示在这里...</p>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built with Azure OpenAI | 使用 Azure OpenAI API</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import fetch from 'node-fetch';
+import FormData from 'form-data';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -98,6 +99,31 @@ app.post('/api/transcribe', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No audio file provided' });
     }
 
+    const headerHex = req.file.buffer.slice(0, 16).toString('hex');
+    const sniffMime = (hex) => {
+      if (hex.startsWith('52494646')) return { mime: 'audio/wav', ext: 'wav' }; // RIFF....
+      if (hex.startsWith('1a45dfa3')) return { mime: 'audio/webm', ext: 'webm' }; // EBML/WebM
+      if (hex.startsWith('4f676753')) return { mime: 'audio/ogg', ext: 'ogg' }; // OggS
+      return null;
+    };
+    const sniffed = sniffMime(headerHex);
+    const mimeType = sniffed?.mime || req.file.mimetype || 'audio/mpeg';
+    const fileExt = sniffed?.ext || (req.file.originalname?.split('.').pop() || 'mp3');
+    const fileName = req.file.originalname || `audio.${fileExt}`;
+
+    // 简单校验：文件过小可能被判定为损坏
+    if (req.file.size < 500) {
+      return res.status(400).json({ error: 'Audio file too small, please record a bit longer and try again.' });
+    }
+
+    console.log('Transcribe upload:', {
+      mimetype: req.file.mimetype,
+      originalname: req.file.originalname,
+      size: req.file.size,
+      headerHex,
+      sniffedMime: mimeType
+    });
+
     const useAzure = process.env.USE_AZURE === 'true';
     
     if (!useAzure) {
@@ -107,34 +133,22 @@ app.post('/api/transcribe', upload.single('file'), async (req, res) => {
     const endpoint = process.env.AZURE_OPENAI_WHISPER_ENDPOINT || process.env.AZURE_OPENAI_ENDPOINT || '';
     const apiKey = process.env.AZURE_OPENAI_WHISPER_API_KEY || process.env.AZURE_OPENAI_API_KEY || '';
     const deployment = process.env.AZURE_OPENAI_WHISPER_DEPLOYMENT || 'whisper';
-    const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-06-01';
+    const apiVersion = '2025-03-01-preview';
 
-    const url = `${endpoint.replace(/\/$/, '')}/openai/deployments/${deployment}/audio/transcriptions?api-version=${apiVersion}`;
+    // 统一走 audio/transcriptions，使用 multipart/form-data + Bearer
+    const transcribeUrl = `${endpoint.replace(/\/$/, '')}/openai/deployments/${deployment}/audio/transcriptions?api-version=${apiVersion}`;
+    const formData = new FormData();
+    formData.append('file', req.file.buffer, { filename: fileName, contentType: mimeType });
+    formData.append('model', deployment);
+    formData.append('response_format', 'json');
 
-    // 构建 multipart form data
-    const boundary = '----Boundary' + Math.random().toString(16).slice(2);
-    
-    const parts = [];
-    parts.push(`--${boundary}`);
-    parts.push('Content-Disposition: form-data; name="file"; filename="audio.wav"');
-    parts.push('Content-Type: audio/wav');
-    parts.push('');
-
-    const bodyBuffer = Buffer.concat([
-      Buffer.from(parts.join('\r\n') + '\r\n'),
-      req.file.buffer,
-      Buffer.from(`\r\n--${boundary}\r\n`),
-      Buffer.from('Content-Disposition: form-data; name="response_format"\r\n\r\njson\r\n'),
-      Buffer.from(`--${boundary}--`)
-    ]);
-
-    const response = await fetch(url, {
+    const response = await fetch(transcribeUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        'api-key': apiKey
+        'Authorization': `Bearer ${apiKey}`,
+        ...formData.getHeaders()
       },
-      body: bodyBuffer
+      body: formData
     });
 
     if (!response.ok) {

@@ -4,10 +4,13 @@ const instructionsEl = document.getElementById('instructions');
 const emailThreadEl = document.getElementById('emailThread');
 const generateBtn = document.getElementById('generateBtn');
 const resultEl = document.getElementById('result');
+const clarifiedInstructionsEl = document.getElementById('clarifiedInstructions');
 const copyBtn = document.getElementById('copyBtn');
 const promptPreviewEl = document.getElementById('promptPreview');
 const loadingEl = document.getElementById('loadingIndicator');
 const recordBtn = document.getElementById('recordBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const audioFileInput = document.getElementById('audioFileInput');
 const recordingStatusEl = document.getElementById('recordingStatus');
 const themeToggle = document.getElementById('themeToggle');
 
@@ -46,6 +49,22 @@ const stopIfRecording = (e) => {
 recordBtn.addEventListener('pointerup', stopIfRecording);
 recordBtn.addEventListener('pointercancel', stopIfRecording);
 recordBtn.addEventListener('pointerleave', stopIfRecording);
+
+// 文件上传功能
+uploadBtn.addEventListener('click', () => {
+    audioFileInput.click();
+});
+
+audioFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    recordingStatusEl.textContent = '处理音频中...';
+    await transcribeAudio(file);
+    
+    // 重置文件输入，允许再次选择同一文件
+    audioFileInput.value = '';
+});
 
 async function startRecording() {
     try {
@@ -145,6 +164,7 @@ generateBtn.addEventListener('click', async () => {
     loadingEl.classList.remove('hidden');
     generateBtn.disabled = true;
     resultEl.innerHTML = '';
+    clarifiedInstructionsEl.innerHTML = '';
     copyBtn.classList.add('hidden');
 
     try {
@@ -170,7 +190,14 @@ generateBtn.addEventListener('click', async () => {
 
         const data = await response.json();
 
-        // 显示结果
+        // 显示整理后的指令
+        if (data.clarifiedInstructions) {
+            clarifiedInstructionsEl.textContent = data.clarifiedInstructions;
+        } else {
+            clarifiedInstructionsEl.innerHTML = '<p class="placeholder">未提供整理后的指令</p>';
+        }
+
+        // 显示邮件回复
         resultEl.textContent = data.text;
         copyBtn.classList.remove('hidden');
 
@@ -211,15 +238,29 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// 加载保存的数据
-window.addEventListener('load', () => {
+// 加载保存的数据 + 从后端加载默认系统提示词
+window.addEventListener('load', async () => {
     const savedInstructions = localStorage.getItem('instructions');
     const savedEmailThread = localStorage.getItem('emailThread');
     const savedSystemPrompt = localStorage.getItem('systemPrompt');
 
     if (savedInstructions) instructionsEl.value = savedInstructions;
     if (savedEmailThread) emailThreadEl.value = savedEmailThread;
-    if (savedSystemPrompt) systemPromptEl.value = savedSystemPrompt;
+    
+    // 如果有保存的系统提示词，使用保存的；否则从后端加载默认值
+    if (savedSystemPrompt) {
+        systemPromptEl.value = savedSystemPrompt;
+    } else {
+        try {
+            const response = await fetch('/api/default-prompt');
+            if (response.ok) {
+                const data = await response.json();
+                systemPromptEl.value = data.defaultPrompt;
+            }
+        } catch (error) {
+            console.error('Failed to load default prompt:', error);
+        }
+    }
 });
 
 // 自动保存

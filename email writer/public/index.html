@@ -20,14 +20,33 @@
                 <div class="left-panel">
                     <div class="panel">
                         <h3>系统提示词</h3>
-                        <textarea id="systemPrompt" class="input-textarea" placeholder="设置 AI 的行为和风格...">You are a professional email writer. Generate clear, concise, and polite email responses.</textarea>
+                        <textarea id="systemPrompt" class="input-textarea" placeholder="设置 AI 的行为和风格...">You are a professional email assistant. Your responsibilities consist of two parts:
+
+1. **Clarify Voice Instructions**: The incoming content may originate from speech‑to‑text transcription and can contain inaccuracies—especially for names, internal terminology, or domain‑specific terms.
+Your tasks are:
+- Cross‑reference the email context to identify and correct any likely transcription errors.
+- Reorganize and refine the content into clear, concise, and well‑structured instructions.
+- Preserve the speaker's intent without adding information not supported by the context.
+
+2. **Compose Email Response**: Based on the clarified instructions and email context, generate a professional email response.
+
+**Output Format:**
+[CLARIFIED_INSTRUCTIONS]
+[Your reorganized and clarified understanding of the user's instructions]
+
+[EMAIL_RESPONSE]
+[Your professional email response]</textarea>
                     </div>
 
                     <div class="panel">
                         <h3>指示（Instructions）</h3>
                         <div class="input-wrapper">
                             <textarea id="instructions" class="input-textarea" placeholder="例如：写得更正式、简洁、友好等..."></textarea>
-                            <button id="recordBtn" class="record-btn" title="按住语音输入">🎙️</button>
+                            <div class="button-group">
+                                <button id="recordBtn" class="record-btn" title="按住语音输入">🎙️</button>
+                                <button id="uploadBtn" class="upload-btn" title="上传音频文件">📁</button>
+                                <input id="audioFileInput" type="file" accept="audio/*" style="display: none;">
+                            </div>
                         </div>
                         <div id="recordingStatus" class="recorder-status"></div>
                     </div>
@@ -49,6 +68,13 @@
 
                 <!-- 右侧输出面板 -->
                 <div class="right-panel">
+                    <div class="panel">
+                        <h3>整理后的指令</h3>
+                        <div id="clarifiedInstructions" class="output-area clarified-area">
+                            <p class="placeholder">整理后的指令会显示在这里...</p>
+                        </div>
+                    </div>
+
                     <div class="panel">
                         <h3>生成的回复</h3>
                         <div id="result" class="output-area">

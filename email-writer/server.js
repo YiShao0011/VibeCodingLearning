@@ -190,7 +190,7 @@ app.post('/api/transcribe', upload.single('file'), async (req, res) => {
       sniffedMime: mimeType
     });
 
-    const useAzure = process.env.USE_AZURE === 'true';
+    const useAzure = process.env.USE_AZURE === 'true' || !!process.env.AZURE_SPEECH_KEY;
     
     if (!useAzure) {
       return res.status(400).json({ error: 'Azure Speech is required' });
@@ -199,6 +199,10 @@ app.post('/api/transcribe', upload.single('file'), async (req, res) => {
     const speechRegion = process.env.AZURE_SPEECH_REGION || '';
     const speechKey = process.env.AZURE_SPEECH_KEY || '';
     const apiVersion = '2025-10-15';
+
+    if (!speechRegion || !speechKey) {
+      return res.status(400).json({ error: 'Azure Speech credentials not configured' });
+    }
 
     // 后端配置的短语列表
     // 支持格式：多个短语用逗号分隔

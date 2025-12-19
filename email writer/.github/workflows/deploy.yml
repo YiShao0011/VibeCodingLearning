@@ -28,6 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: 'email writer'
 
       - name: Login to Azure (using OIDC)
         uses: azure/login@v2
@@ -40,4 +41,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'EmailVoiceAssistant'
-          package: .
+          package: 'email writer'

@@ -76,7 +76,7 @@ app.post('/api/generate', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const useAzure = process.env.USE_AZURE === 'true';
+    const useAzure = process.env.USE_AZURE === 'true' || !!process.env.AZURE_OPENAI_API_KEY;
     
     if (!useAzure) {
       return res.status(400).json({ error: 'Azure OpenAI is required' });
@@ -87,6 +87,10 @@ app.post('/api/generate', async (req, res) => {
     const apiKey = process.env.AZURE_OPENAI_API_KEY || '';
     const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4.1';
     const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-06-01';
+
+    if (!endpoint || !apiKey) {
+      return res.status(400).json({ error: 'Azure OpenAI credentials not configured' });
+    }
 
     // 构建请求消息
     const messages = [

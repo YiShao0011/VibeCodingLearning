@@ -32,7 +32,7 @@ let lastDurationMs = 0;
 const translations = {
     zh: {
         mainTitle: '📧 Email Voice Assistant',
-        subtitle: '我相信，麦克风比键盘更加高效。我相信，重要的是你的想法，其余的都可以交给AI。',
+        subtitle: '我相信，麦克风比键盘更加高效。我相信，重要的是你的想法，表达可以放心交给AI。',
         instructions: '指示',
         emailContent: '邮件内容',
         generatedReply: '生成的回复',
@@ -54,11 +54,11 @@ const translations = {
         clarifiedTitle: '整理后的指令',
         previewTitle: '提示词预览',
         footerText: '语音转文字由Azure Speech Fast Transcription API支持，指令与邮件生成由Gpt-4.1模型支持',
-        developerInfo: '开发者：Yi Shao | 欢迎在Teams上直接和我提供反馈',
+        developerInfo: '开发者：Yi Shao | 第一个VibeCoding项目 | 欢迎在Teams上直接和我提供反馈',
     },
     en: {
         mainTitle: '📧 Email Voice Assistant',
-        subtitle: 'Simply express your thoughts naturally, let AI handle the rest',
+        subtitle: 'I believe microphone is more efficient than keyboard. I believe what matters is your thoughts, and expression can be safely left to AI.',
         instructions: 'Instructions',
         emailContent: 'Email Content',
         generatedReply: 'Generated Reply',
@@ -80,7 +80,7 @@ const translations = {
         clarifiedTitle: 'Clarified Instructions',
         previewTitle: 'Prompt Preview',
         footerText: 'Speech-to-Text powered by Azure Speech Fast Transcription API, Instructions and Email Generation powered by Gpt-4.1 model',
-        developerInfo: 'Developer: Yi Shao | Welcome to provide feedback directly on Teams',
+        developerInfo: 'Developer: Yi Shao | First VibeCoding Project | Welcome to provide feedback directly on Teams',
     }
 };
 

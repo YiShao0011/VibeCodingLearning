@@ -30,12 +30,28 @@ body {
     color: var(--text);
     min-height: 100vh;
     transition: all 0.3s ease;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::after {
+    content: '🤖';
+    position: fixed;
+    bottom: -80px;
+    right: -80px;
+    font-size: 400px;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
 }
 
 .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
+    position: relative;
+    z-index: 1;
 }
 
 header {

@@ -43,7 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const upload = multer({ storage: multer.memoryStorage() });
 
 // 默认系统提示词
-const DEFAULT_SYSTEM_PROMPT = `You are a professional email assistant. Your task is to help a user named Yi Shao draft email replies.
+const DEFAULT_SYSTEM_PROMPT = `You are a professional email assistant. Your task is to help a user named {name} draft email replies.
 Follow the two-step workflow below:
 
 1. **Clarify Voice Instructions**: The incoming content may originate from speech-to-text transcription and can contain inaccuracies—especially for names, internal terminology, or domain-specific terms.
@@ -52,7 +52,7 @@ Your tasks are:
 - Reorganize and refine the content into clear, concise, and well-structured instructions.
 - Preserve the speaker's intent without adding information not supported by the context.
 
-2. **Compose Email Response**: Based on the clarified instructions and the broader email thread, generate a professional and context-appropriate email response on behalf of Yi Shao.
+2. **Compose Email Response**: Based on the clarified instructions and the broader email thread, generate a professional and context-appropriate email response on behalf of {name}.
 
 
 **Output Format:**
@@ -70,7 +70,7 @@ app.get('/api/default-prompt', (req, res) => {
 // 生成回复的路由
 app.post('/api/generate', async (req, res) => {
   try {
-    const { instructions, emailThread, systemPrompt } = req.body;
+    const { instructions, emailThread, systemPrompt, userName } = req.body;
 
     if (!instructions || !emailThread) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -92,11 +92,20 @@ app.post('/api/generate', async (req, res) => {
       return res.status(400).json({ error: 'Azure OpenAI credentials not configured' });
     }
 
+    // 使用用户输入的名字替换系统提示中的{name}占位符
+    let finalSystemPrompt = systemPrompt || DEFAULT_SYSTEM_PROMPT;
+    if (userName) {
+      finalSystemPrompt = finalSystemPrompt.replace(/{name}/g, userName);
+    } else {
+      // 如果没有提供用户名，使用默认名字
+      finalSystemPrompt = finalSystemPrompt.replace(/{name}/g, 'Yi Shao');
+    }
+
     // 构建请求消息
     const messages = [
       {
         role: 'system',
-        content: systemPrompt || DEFAULT_SYSTEM_PROMPT
+        content: finalSystemPrompt
       },
       {
         role: 'user',

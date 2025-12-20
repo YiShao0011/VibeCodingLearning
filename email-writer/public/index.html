@@ -9,17 +9,72 @@
 <body>
     <div class="container">
         <header>
-            <h1>📧 Email Writer</h1>
-            <p>AI 驱动的邮件回复生成器</p>
-            <button id="themeToggle" class="theme-toggle">🌙 深色模式</button>
+            <h1>📧 Email Voice Assistant</h1>
+            <p>我相信，麦克风比键盘更加高效。我相信，重要的是你的想法，其余的都可以交给AI。</p>
+            <div class="header-buttons">
+                <button id="langToggle" class="lang-toggle">🌐 English</button>
+                <button id="debugModeToggle" class="debug-mode-toggle">🔧 调试模式</button>
+                <button id="themeToggle" class="theme-toggle">🌙 深色模式</button>
+            </div>
         </header>
 
         <div class="main-content">
-            <div class="panels-container">
-                <!-- 左侧输入面板 -->
-                <div class="left-panel">
-                    <div class="panel">
-                        <h3>系统提示词</h3>
+            <!-- 指示（Instructions）模块 - 最上方 -->
+            <div class="panel instructions-panel">
+                <h3>指示</h3>
+                <div class="input-wrapper">
+                    <textarea id="instructions" class="input-textarea default-text" style="color: rgba(102, 102, 102, 0.5); font-style: italic;">请长按按钮开始录音，你只需要用最自然的口吻说出你想回复的内容，不要担心你表达中的重复、停顿和修正，AI会自动帮你整理要点并撰写邮件。</textarea>
+                    <div class="button-group">
+                        <button id="recordBtn" class="record-btn" title="按住语音输入">🎙️ 长按录音</button>
+                        <button id="uploadBtn" class="upload-btn" title="上传音频文件">📁 上传音频</button>
+                        <input id="audioFileInput" type="file" accept="audio/*" style="display: none;">
+                    </div>
+                </div>
+                <div id="recordingStatus" class="recorder-status"></div>
+            </div>
+
+            <!-- 邮件内容 -->
+            <div class="panel email-content-panel">
+                <h3>邮件内容</h3>
+                
+                <!-- 用户名称输入框 -->
+                <div class="name-input-group">
+                    <input type="text" id="userName" class="name-input" placeholder="请输入你在邮件中的名字" />
+                    <button id="rememberNameBtn" class="remember-name-btn">记住我的名字</button>
+                </div>
+                
+                <textarea id="emailThread" class="input-textarea default-text" placeholder="请输入完整的邮件内容，充分的上下文将帮助AI识别语音转文字中的错误，更清楚理解你的想法和写出更高质量的邮件回复。"></textarea>
+            </div>
+
+            <!-- 生成回复按钮 -->
+            <div class="generate-section">
+            </div>
+
+            <!-- 生成的回复 -->
+            <div class="panel reply-panel">
+                <h3>生成的回复</h3>
+                <div id="result" class="output-area">
+                    <p class="placeholder">生成的邮件回复会显示在这里...</p>
+                    <div id="loadingIndicator" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>正在处理...</p>
+                    </div>
+                </div>
+                <div class="reply-actions">
+                    <button id="generateBtn" class="generate-btn">✨ 生成回复</button>
+                    <button id="copyBtn" class="copy-btn">📋 一键复制</button>
+                </div>
+            </div>
+
+            <!-- 调试模块（可折叠） -->
+            <div class="panel debug-panel hidden">
+                <div class="debug-header">
+                    <h3>🔧 调试</h3>
+                    <button id="debugToggle" class="debug-toggle">▼</button>
+                </div>
+                <div id="debugContent" class="debug-content">
+                    <div class="debug-section">
+                        <h4>系统提示词</h4>
                         <textarea id="systemPrompt" class="input-textarea" placeholder="设置 AI 的行为和风格...">You are a professional email assistant. Your responsibilities consist of two parts:
 
 1. **Clarify Voice Instructions**: The incoming content may originate from speech‑to‑text transcription and can contain inaccuracies—especially for names, internal terminology, or domain‑specific terms.
@@ -38,53 +93,15 @@ Your tasks are:
 [Your professional email response]</textarea>
                     </div>
 
-                    <div class="panel">
-                        <h3>指示（Instructions）</h3>
-                        <div class="input-wrapper">
-                            <textarea id="instructions" class="input-textarea" placeholder="例如：写得更正式、简洁、友好等..."></textarea>
-                            <div class="button-group">
-                                <button id="recordBtn" class="record-btn" title="按住语音输入">🎙️</button>
-                                <button id="uploadBtn" class="upload-btn" title="上传音频文件">📁</button>
-                                <input id="audioFileInput" type="file" accept="audio/*" style="display: none;">
-                            </div>
-                        </div>
-                        <div id="recordingStatus" class="recorder-status"></div>
-                    </div>
-
-                    <div class="panel">
-                        <h3>邮件内容</h3>
-                        <textarea id="emailThread" class="input-textarea" placeholder="粘贴完整的邮件对话..."></textarea>
-                    </div>
-                </div>
-
-                <!-- 中间操作区 -->
-                <div class="middle-panel">
-                    <button id="generateBtn" class="generate-btn">生成回复</button>
-                    <div id="loadingIndicator" class="loading hidden">
-                        <div class="spinner"></div>
-                        <p>正在处理...</p>
-                    </div>
-                </div>
-
-                <!-- 右侧输出面板 -->
-                <div class="right-panel">
-                    <div class="panel">
-                        <h3>整理后的指令</h3>
+                    <div class="debug-section">
+                        <h4>整理后的指令</h4>
                         <div id="clarifiedInstructions" class="output-area clarified-area">
                             <p class="placeholder">整理后的指令会显示在这里...</p>
                         </div>
                     </div>
 
-                    <div class="panel">
-                        <h3>生成的回复</h3>
-                        <div id="result" class="output-area">
-                            <p class="placeholder">生成的邮件回复会显示在这里...</p>
-                        </div>
-                        <button id="copyBtn" class="copy-btn hidden">📋 复制</button>
-                    </div>
-
-                    <div class="panel">
-                        <h3>提示词预览</h3>
+                    <div class="debug-section">
+                        <h4>提示词预览</h4>
                         <pre id="promptPreview" class="prompt-preview">
                             <p class="placeholder">提示词会显示在这里...</p>
                         </pre>
@@ -94,7 +111,8 @@ Your tasks are:
         </div>
 
         <footer>
-            <p>Built with Azure OpenAI | 使用 Azure OpenAI API</p>
+            <p id="footerText">语音转文字由Azure Speech Fast Transcription API支持，指令与邮件生成由Gpt-4.1模型支持</p>
+            <p id="developerInfo">开发者：Yi Shao | 欢迎在Teams上直接和我提供反馈</p>
         </footer>
     </div>
 

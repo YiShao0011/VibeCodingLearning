@@ -32,7 +32,7 @@ let lastDurationMs = 0;
 const translations = {
     zh: {
         mainTitle: '📧 Email Voice Assistant',
-        subtitle: '我相信，麦克风比键盘更加高效。我相信，重要的是你的想法，表达可以放心交给AI。',
+        subtitle: '你可以直接用中文说出你的想法，然后让AI帮你写好邮件回复。',
         instructions: '指示',
         emailContent: '邮件内容',
         generatedReply: '生成的回复',
@@ -58,7 +58,7 @@ const translations = {
     },
     en: {
         mainTitle: '📧 Email Voice Assistant',
-        subtitle: 'I believe microphone is more efficient than keyboard. I believe what matters is your thoughts, and expression can be safely left to AI.',
+        subtitle: 'Simply speak your thoughts in Chinese, and let AI craft the perfect email reply for you.',
         instructions: 'Instructions',
         emailContent: 'Email Content',
         generatedReply: 'Generated Reply',
